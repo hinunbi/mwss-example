@@ -1,0 +1,82 @@
+<wsdl:definitions name="Payment" targetNamespace="http://payment.ws.brm.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://payment.ws.brm.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:ns1="http://schemas.xmlsoap.org/soap/http">
+	<wsdl:types>
+		<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://payment.ws.brm.com/"
+			xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://payment.ws.brm.com/">
+			<xs:complexType name="fault">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="reason" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="transferRequest">
+				<xs:sequence>
+					<xs:element name="amount" type="xs:long" />
+					<xs:element minOccurs="0" name="bank" type="xs:string" />
+					<xs:element minOccurs="0" name="from" type="xs:string" />
+					<xs:element minOccurs="0" name="to" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="transferResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="reply" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="TransferException" type="TransferException" />
+			<xs:complexType name="TransferException">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="fault" type="fault" />
+					<xs:element minOccurs="0" name="message" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="transferFunds" type="transferFunds" />
+			<xs:complexType name="transferFunds">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="arg0" type="transferRequest" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="transferFundsResponse" type="transferFundsResponse" />
+			<xs:complexType name="transferFundsResponse">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="return" type="transferResponse" />
+				</xs:sequence>
+			</xs:complexType>
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="transferFunds">
+		<wsdl:part element="tns:transferFunds" name="parameters"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="TransferException">
+		<wsdl:part element="tns:TransferException" name="TransferException"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="transferFundsResponse">
+		<wsdl:part element="tns:transferFundsResponse" name="parameters"></wsdl:part>
+	</wsdl:message>
+	<wsdl:portType name="PaymentPortType">
+		<wsdl:operation name="transferFunds">
+			<wsdl:input message="tns:transferFunds" name="transferFunds"></wsdl:input>
+			<wsdl:output message="tns:transferFundsResponse" name="transferFundsResponse"></wsdl:output>
+			<wsdl:fault message="tns:TransferException" name="TransferException"></wsdl:fault>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="PaymentSoapBinding" type="tns:PaymentPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="transferFunds">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="transferFunds">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="transferFundsResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="TransferException">
+				<soap:fault name="TransferException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="Payment">
+		<wsdl:port binding="tns:PaymentSoapBinding" name="PaymentPort">
+			<soap:address location="http://localhost:9090/paymentService" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
